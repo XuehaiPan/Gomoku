@@ -97,8 +97,8 @@ class Board {
     public Board() {
         history = new Stack<Stone>();
         board = new StoneType[n + 2][n + 2];
-        gameStartedChangeSupport = new DataChangeSupport<Boolean>(this, false);
-        historySizeChangeSupport = new DataChangeSupport<Integer>(this, 0);
+        gameStartedChangeSupport = new DataChangeSupport<Boolean>(this, "gameStarted", false);
+        historySizeChangeSupport = new DataChangeSupport<Integer>(this, "historySize", 0);
         player1StoneType = StoneType.SPACE;
         presetStoneNumber = 5;
         rowStonesUpdated = false;
@@ -190,66 +190,6 @@ class Board {
     }
     
     
-    public boolean isGameStarted() {
-        return gameStartedChangeSupport.getValue();
-    }
-    
-    
-    public boolean isGameOver() {
-        return !gameStartedChangeSupport.getValue();
-    }
-    
-    
-    public boolean isPlayerColorChosen() {
-        return (player1StoneType != StoneType.SPACE);
-    }
-    
-    
-    public void choosePlayer1Color(StoneType player1StoneType) {
-        assert (!isPlayerColorChosen() && player1StoneType != StoneType.SPACE);
-        this.player1StoneType = player1StoneType;
-        presetStoneNumber = history.size();
-    }
-    
-    
-    public Stack<Stone> getHistory() {
-        return history;
-    }
-    
-    
-    public int getHistorySize() {
-        return history.size();
-    }
-    
-    
-    public boolean hasNoHistory() {
-        return history.isEmpty();
-    }
-    
-    
-    public Stone getLastStone() throws EmptyStackException {
-        return history.peek();
-    }
-    
-    
-    public Stone getStoneFromIndex(int index) throws ArrayIndexOutOfBoundsException {
-        return history.get(index);
-    }
-    
-    
-    public StoneType getNextStoneType() {
-        return (history.size() % 2 == 0 ? StoneType.BLACK : StoneType.WHITE);
-    }
-    
-    
-    public int getNextPlayerNumber() {
-        if (isPlayerColorChosen())
-            return (player1StoneType == getNextStoneType() ? 1 : 2);
-        else
-            return (history.size() < 3 ? 1 : 2);
-    }
-    
-    
     public void putStone(int i, int j) throws GameNotStartedException, StoneOutOfBoardRangeException, StoneAlreadyPlacedException {
         if (!isGameStarted())
             throw new GameNotStartedException();
@@ -265,7 +205,7 @@ class Board {
     }
     
     
-    public Stone removeStone() throws GameNotStartedException, EmptyStackException {
+    public Stone retractStone() throws GameNotStartedException, EmptyStackException {
         if (!isGameStarted())
             throw new GameNotStartedException();
         if (!canRetractStone())
@@ -328,6 +268,66 @@ class Board {
     }
     
     
+    public boolean isGameStarted() {
+        return gameStartedChangeSupport.getValue();
+    }
+    
+    
+    public boolean isGameOver() {
+        return !gameStartedChangeSupport.getValue();
+    }
+    
+    
+    public boolean isPlayerColorChosen() {
+        return (player1StoneType != StoneType.SPACE);
+    }
+    
+    
+    public void choosePlayer1Color(StoneType player1StoneType) {
+        assert (!isPlayerColorChosen() && player1StoneType != StoneType.SPACE);
+        this.player1StoneType = player1StoneType;
+        presetStoneNumber = history.size();
+    }
+    
+    
+    public Stack<Stone> getHistory() {
+        return history;
+    }
+    
+    
+    public int getHistorySize() {
+        return history.size();
+    }
+    
+    
+    public boolean hasNoHistory() {
+        return history.isEmpty();
+    }
+    
+    
+    public Stone getLastStone() throws EmptyStackException {
+        return history.peek();
+    }
+    
+    
+    public Stone getStoneFromIndex(int index) throws ArrayIndexOutOfBoundsException {
+        return history.get(index);
+    }
+    
+    
+    public StoneType getNextStoneType() {
+        return (history.size() % 2 == 0 ? StoneType.BLACK : StoneType.WHITE);
+    }
+    
+    
+    public int getNextPlayerNumber() {
+        if (isPlayerColorChosen())
+            return (player1StoneType == getNextStoneType() ? 1 : 2);
+        else
+            return (history.size() < 3 ? 1 : 2);
+    }
+    
+    
     public void addGameStartedChangeListener(PropertyChangeListener listener) {
         gameStartedChangeSupport.addPropertyChangeListener(listener);
     }
@@ -341,11 +341,13 @@ class Board {
 
 class DataChangeSupport<T> extends PropertyChangeSupport {
     private T value;
+    private String propertyName;
     
     
-    public DataChangeSupport(Object source, T value) {
+    public DataChangeSupport(Object source, String propertyName, T initialValue) {
         super(source);
-        this.value = value;
+        this.propertyName = propertyName;
+        value = initialValue;
     }
     
     
@@ -357,7 +359,7 @@ class DataChangeSupport<T> extends PropertyChangeSupport {
     public void setValue(T newValue) {
         T oldValue = value;
         value = newValue;
-        firePropertyChange("value", oldValue, newValue);
+        firePropertyChange(propertyName, oldValue, newValue);
     }
 }
 

@@ -152,9 +152,9 @@ class Display extends JPanel {
     }
     
     
-    public void removeStone() {
+    public void retractStone() {
         try {
-            Stone lastStone = board.removeStone();
+            Stone lastStone = board.retractStone();
             Graphics2D g2D = (Graphics2D) getGraphics();
             eraseStone(g2D, lastStone.getI(), lastStone.getJ());
             paintStoneIndexHighlight(g2D, board.getIndexOfRowStones());

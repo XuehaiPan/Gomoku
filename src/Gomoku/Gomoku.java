@@ -38,14 +38,18 @@ public class Gomoku extends JFrame {
         loadOrSaveGameButton = new JButton("载入游戏");
         retractButton = new JButton("悔棋");
         showRuleButton = new JButton("游戏规则");
+        
+        initActionListeners();
+        
+        initLayout();
+        
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+    
+    
+    private void initActionListeners() {
         retractButton.setEnabled(false);
-        
-        Font font = new Font(Font.DIALOG, Font.PLAIN, Display.sideLength);
-        newGameButton.setFont(font);
-        loadOrSaveGameButton.setFont(font);
-        retractButton.setFont(font);
-        showRuleButton.setFont(font);
-        
         newGameButton.addActionListener(e -> {
             if (!board.isGameStarted())
                 display.newGame();
@@ -82,7 +86,7 @@ public class Gomoku extends JFrame {
                 }
             }
         });
-        retractButton.addActionListener(e -> display.removeStone());
+        retractButton.addActionListener(e -> display.retractStone());
         showRuleButton.addActionListener(e -> JOptionPane.showMessageDialog(this, swap2Rule, "Swap2 规则", JOptionPane.INFORMATION_MESSAGE));
         board.addGameStartedChangeListener(evt -> {
             if ((Boolean) evt.getNewValue()) {
@@ -96,18 +100,6 @@ public class Gomoku extends JFrame {
             retractButton.setEnabled(board.canRetractStone());
         });
         board.addHistorySizeChangeListener(evt -> retractButton.setEnabled(board.canRetractStone()));
-        
-        display.setLayout(null);
-        setSize(960, 700);
-        newGameButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 3 * Display.sideLength, 220, 2 * Display.sideLength);
-        loadOrSaveGameButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 6 * Display.sideLength, 220, 2 * Display.sideLength);
-        retractButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 9 * Display.sideLength, 220, 2 * Display.sideLength);
-        showRuleButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 12 * Display.sideLength, 220, 2 * Display.sideLength);
-        display.add(newGameButton);
-        display.add(loadOrSaveGameButton);
-        display.add(retractButton);
-        display.add(showRuleButton);
-        
         display.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -138,10 +130,27 @@ public class Gomoku extends JFrame {
             public void mouseExited(MouseEvent e) {
             }
         });
+    }
+    
+    
+    private void initLayout() {
+        Font font = new Font(Font.DIALOG, Font.PLAIN, Display.sideLength);
+        newGameButton.setFont(font);
+        loadOrSaveGameButton.setFont(font);
+        retractButton.setFont(font);
+        showRuleButton.setFont(font);
         
+        display.setLayout(null);
+        setSize(960, 700);
+        newGameButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 3 * Display.sideLength, 220, 2 * Display.sideLength);
+        loadOrSaveGameButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 6 * Display.sideLength, 220, 2 * Display.sideLength);
+        retractButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 9 * Display.sideLength, 220, 2 * Display.sideLength);
+        showRuleButton.setBounds(display.getBoundXR() + 2 * Display.sideLength, display.getBoundYU() + 12 * Display.sideLength, 220, 2 * Display.sideLength);
+        display.add(newGameButton);
+        display.add(loadOrSaveGameButton);
+        display.add(retractButton);
+        display.add(showRuleButton);
         setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
     }
     
     
